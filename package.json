@@ -1,0 +1,27 @@
+{
+  "name": "bytty",
+  "version": "1.0.0",
+  "description": "Temporary file sharing system",
+  "main": "index.js",
+  "scripts": {
+    "start": "node -r esm index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TheFlow95/bytty.git"
+  },
+  "author": "TheFlow95",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/TheFlow95/bytty/issues"
+  },
+  "homepage": "https://github.com/TheFlow95/bytty#readme",
+  "dependencies": {
+    "bootstrap": "^4.4.1",
+    "ejs": "^3.0.1",
+    "esm": "^3.2.25",
+    "express": "^4.17.1",
+    "multer": "^1.4.2"
+  }
+}
