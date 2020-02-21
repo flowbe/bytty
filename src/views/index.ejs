@@ -7,7 +7,7 @@
 	<title>bytty</title>
 
 	<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Roboto:300,300italic,400" />
-	<link rel="stylesheet" type="text/css" href="static/css/style.css">
+	<link rel="stylesheet" type="text/css" href="/static/css/style.css">
 
 	<script type="text/javascript">
 		(function (e, t, n) { var r = e.querySelectorAll("html")[0]; r.className = r.className.replace(/(^|\s)no-js(\s|$)/, "$1js$2") })(document, window, 0);
@@ -18,6 +18,7 @@
 	<div class="container" role="main">
 		<h1>bytty</h1>
 		<form class="box" method="post" action="/upload" enctype="multipart/form-data">
+			<input type="hidden" name="_csrf" value="<%= csrfToken %>">
 			<div class="box__input">
 				<svg class="box__icon" xmlns="http://www.w3.org/2000/svg" width="50" height="43" viewBox="0 0 50 43">
 					<path
@@ -32,15 +33,15 @@
 			</div>
 
 			<div class="box__uploading">Uploading&hellip;</div>
-			<div class="box__success">Done!</div>
-			<div class="box__error">Error! <span></span>.</div>
+			<div class="box__success">Done! Your download link is <a href="#" id="download_link"></a>.</div>
+			<div class="box__error">Error! <span id="error_msg"></span>.</div>
 		</form>
 	</div>
 
 
 	<!-- JS scripts -->
 	<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-	<script src="static/js/script.js"></script>
+	<script src="/static/js/script.js"></script>
 </body>
 
 </html>

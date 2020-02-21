@@ -3,12 +3,15 @@ var isAdvancedUpload = function () {
 	return (('draggable' in div) || ('ondragstart' in div && 'ondrop' in div)) && 'FormData' in window && 'FileReader' in window;
 }();
 
-var $form = $('.box');
-var $input = $form.find('input[type="file"]'),
+var $form = $('.box'),
+	$input = $form.find('input[type="file"]'),
 	$label = $form.find('label'),
 	showFiles = function (files) {
 		$label.text(files.length > 1 ? ($input.attr('data-multiple-caption') || '').replace('{count}', files.length) : files[0].name);
 	};
+
+var $errorMsg = $('#error_msg');
+var $downloadLink = $('#download_link');
 
 if (isAdvancedUpload) {
 	$form.addClass('has-advanced-upload');
@@ -64,10 +67,16 @@ $form.on('submit', function (e) {
 			},
 			success: function (data) {
 				$form.addClass(data.success == true ? 'is-success' : 'is-error');
-				if (!data.success) $errorMsg.text(data.error);
+				if (data.success) {
+					$downloadLink.attr('href', data.link);
+					$downloadLink.text(data.link);
+				} else {
+					$errorMsg.text(data.error);
+				}
 			},
-			error: function () {
-				// Log the error, show an alert, whatever works for you
+			error: function (xhr) {
+				$form.addClass('is-error');
+				$errorMsg.text(xhr.responseJSON.error || 'Unexpected error, try again later');
 			}
 		});
 	} else {

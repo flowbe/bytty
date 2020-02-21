@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Files – bytty</title>
+
+	<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Roboto:300,300italic,400" />
+	<link rel="stylesheet" type="text/css" href="/static/css/style.css">
+</head>
+<body>
+	<div class="container" role="main">
+		<h1>Files</h1>
+
+		<% files.forEach(file => { %>
+		<p><a href="/files/<%= id %>/download/<%= file.id %>"><%= file.originalName %></a></p>
+		<% }) %>
+
+		<p><a href="/files/<%= id %>/download">Download all files</a></p>
+	</div>
+</body>
+</html>
