@@ -12,6 +12,7 @@ var $form = $('.box'),
 
 var $errorMsg = $('#error_msg');
 var $downloadLink = $('#download_link');
+var $uploadProgress = $('#upload_progress');
 
 if (isAdvancedUpload) {
 	$form.addClass('has-advanced-upload');
@@ -62,6 +63,19 @@ $form.on('submit', function (e) {
 			cache: false,
 			contentType: false,
 			processData: false,
+			xhr: function () {
+				var myXhr = $.ajaxSettings.xhr();
+				// Compute upload progress
+				if (myXhr.upload) {
+					myXhr.upload.addEventListener('progress', function (e) {
+						if (e.lengthComputable) {
+							var percentage = e.loaded / e.total * 100;
+							$uploadProgress.text(Math.round(percentage));
+						}
+					});
+				}
+				return myXhr;
+			},
 			complete: function () {
 				$form.removeClass('is-uploading');
 			},
