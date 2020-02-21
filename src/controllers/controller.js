@@ -33,6 +33,33 @@ export async function upload(req, res) {
 	}
 }
 
+export async function clean(req, res) {
+	const folders = await Folder.findAll({ include: [{ model: File }] })
+	
+	for (const folder of folders) {
+		if (folder.expirationDate < Date.now()) {
+			for (const file of folder.files) {
+				try {
+					await new Promise((resolve, reject) => {
+						fs.unlink(path.join('uploads', file.fileName), err => {
+							if (err) {
+								reject(err)
+							} else {
+								resolve()
+							}
+						})
+					})
+				} catch (err) {
+					console.error(err)
+				}
+			}
+			await folder.destroy()
+		}
+	}
+
+	res.end()
+}
+
 export async function viewFiles(req, res, next) {
 	const id = req.params.id
 

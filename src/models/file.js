@@ -14,6 +14,6 @@ const File = sequelize.define('file', {
 })
 
 File.belongsTo(Folder)
-Folder.hasMany(File)
+Folder.hasMany(File, { onDelete: 'CASCADE' })
 
 export default File
