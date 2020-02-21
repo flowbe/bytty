@@ -1,6 +1,7 @@
 import express from 'express'
 import csurf from 'csurf'
 import multer from 'multer'
+import sanitize from '../utils/sanitize'
 import { index, upload, clean, viewFiles, downloadFiles, downloadFile, jsonError } from '../controllers/controller'
 
 const router = express.Router()
@@ -10,7 +11,7 @@ const storage = multer.diskStorage({
 		callback(null, './uploads');
 	},
 	filename: function (req, file, callback) {
-		callback(null, file.originalname + '-' + Date.now());
+		callback(null, sanitize(file.originalname) + '-' + Date.now());
 	}
 })
 const fileUpload = multer({ storage: storage }).array('files[]')
