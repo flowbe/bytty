@@ -2,6 +2,7 @@ import express from 'express'
 import path from 'path'
 import session from 'express-session'
 import routes from './routes/routes'
+import pastebin from './routes/pastebin'
 import config from '../config.json'
 import colors from './utils/colors'
 import sequelize from './utils/sequelize'
@@ -27,6 +28,7 @@ app.use(session({
 app.use('/static', express.static(path.join(__dirname, 'public')))
 
 app.use(routes)
+app.use('/pastebin', pastebin)
 
 // Error handling
 app

@@ -14,8 +14,10 @@ export function index(req, res) {
 export async function upload(req, res) {
 	// Save to database
 	const id = shortid.generate()
+	const duration = (req.body.duration == '3d') ? 3 : ((req.body.duration == '2d') ? 2 : 1)
 	const expirationDate = new Date()
-	expirationDate.setDate(expirationDate.getDate() + 1)
+	expirationDate.setDate(expirationDate.getDate() + duration)
+	//console.log(req.body.password)
 
 	try {
 		const result = await sequelize.transaction(async t => {

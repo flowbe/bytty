@@ -3,9 +3,10 @@ var isAdvancedUpload = function () {
 	return (('draggable' in div) || ('ondragstart' in div && 'ondrop' in div)) && 'FormData' in window && 'FileReader' in window;
 }();
 
-var $form = $('.box'),
-	$input = $form.find('input[type="file"]'),
-	$label = $form.find('label'),
+var $form = $('#form'),
+	$box = $('.box'),
+	$input = $box.find('input[type="file"]'),
+	$label = $box.find('label'),
 	showFiles = function (files) {
 		$label.text(files.length > 1 ? ($input.attr('data-multiple-caption') || '').replace('{count}', files.length) : files[0].name);
 	};
@@ -15,20 +16,20 @@ var $downloadLink = $('#download_link');
 var $uploadProgress = $('#upload_progress');
 
 if (isAdvancedUpload) {
-	$form.addClass('has-advanced-upload');
+	$box.addClass('has-advanced-upload');
 
 	var droppedFiles = false;
 
-	$form
+	$box
 		.on('drag dragstart dragend dragover dragenter dragleave drop', function (e) {
 			e.preventDefault();
 			e.stopPropagation();
 		})
 		.on('dragover dragenter', function () {
-			$form.addClass('is-dragover');
+			$box.addClass('is-dragover');
 		})
 		.on('dragleave dragend drop', function () {
-			$form.removeClass('is-dragover');
+			$box.removeClass('is-dragover');
 		})
 		.on('drop', function (e) {
 			droppedFiles = e.originalEvent.dataTransfer.files; // the files that were dropped
@@ -40,9 +41,9 @@ if (isAdvancedUpload) {
 }
 
 $form.on('submit', function (e) {
-	if ($form.hasClass('is-uploading')) return false;
+	if ($box.hasClass('is-uploading')) return false;
 
-	$form.addClass('is-uploading').removeClass('is-error');
+	$box.addClass('is-uploading').removeClass('is-error');
 
 	if (isAdvancedUpload) {
 		e.preventDefault();
@@ -77,10 +78,10 @@ $form.on('submit', function (e) {
 				return myXhr;
 			},
 			complete: function () {
-				$form.removeClass('is-uploading');
+				$box.removeClass('is-uploading');
 			},
 			success: function (data) {
-				$form.addClass(data.success == true ? 'is-success' : 'is-error');
+				$box.addClass(data.success == true ? 'is-success' : 'is-error');
 				if (data.success) {
 					$downloadLink.attr('href', data.link);
 					$downloadLink.text(data.link);
@@ -89,7 +90,7 @@ $form.on('submit', function (e) {
 				}
 			},
 			error: function (xhr) {
-				$form.addClass('is-error');
+				$box.addClass('is-error');
 				$errorMsg.text(xhr.responseJSON.error || 'Unexpected error, try again later');
 			}
 		});
@@ -102,10 +103,10 @@ $form.on('submit', function (e) {
 
 		$iframe.one('load', function () {
 			var data = JSON.parse($iframe.contents().find('body').text());
-			$form
+			$box
 				.removeClass('is-uploading')
 				.addClass(data.success == true ? 'is-success' : 'is-error')
-				.removeAttr('target');
+			$form.removeAttr('target');
 			if (!data.success) $errorMsg.text(data.error);
 			$form.removeAttr('target');
 			$iframe.remove();
