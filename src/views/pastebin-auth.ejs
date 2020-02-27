@@ -19,12 +19,12 @@
 			<a href="/files">Your files</a>
 		</nav>
 
-		<p>These files are password protected. Please enter it below to access them.</p>
+		<p>This pastebin password protected. Please enter it below to access the pastebin.</p>
 		<% if (messages.error) { %>
 		<p class="error-message"><%= messages.error %></p>
 		<% } %>
 
-		<form id="form" method="post" action="/files/<%= id %>">
+		<form id="form" method="post" action="/pastebin/<%= id %>">
 			<input type="hidden" name="_csrf" value="<%= csrfToken %>">
 			<div class="row">
 				<div class="full">

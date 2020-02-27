@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="no-js">
+<html lang="en">
 
 <head>
 	<meta charset="UTF-8">
@@ -8,10 +8,6 @@
 
 	<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Roboto:300,300italic,400" />
 	<link rel="stylesheet" type="text/css" href="/static/css/style.css">
-
-	<script type="text/javascript">
-		(function (e, t, n) { var r = e.querySelectorAll("html")[0]; r.className = r.className.replace(/(^|\s)no-js(\s|$)/, "$1js$2") })(document, window, 0);
-	</script>
 </head>
 
 <body>
@@ -23,6 +19,7 @@
 			<a href="/files" class="is-selected">Your files</a>
 		</nav>
 		
+		<h2>Your files</h2>
 		<table>
 			<tr>
 				<th>Link</th>
@@ -43,11 +40,33 @@
 			</tr>
 			<% }); %>
 		</table>
-	</div>
 
-	<!-- JS scripts -->
-	<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-	<script src="/static/js/script.js"></script>
+		<h2>Your pastebins</h2>
+		<table>
+			<tr>
+				<th>Link</th>
+				<th>Creation date</th>
+				<th>Expiration date</th>
+			</tr>
+
+			<% if (pastebins.length == 0) { %>
+			<tr>
+				<td colspan="3"> No pastebins.</td>
+			</tr>
+			<% } %>
+			<% pastebins.forEach(pastebin => { %>
+			<tr>
+				<td><a href="<%= pastebin.link %>"><%= pastebin.link %></a></td>
+				<td><%= pastebin.createdAt.toLocaleString() %></td>
+				<td><%= pastebin.expirationDate.toLocaleString() %></td>
+			</tr>
+			<% }); %>
+		</table>
+
+		<footer>
+			<p>Only files and pastebins created on this computer appear on this page.<br>Removing your cookies will empty this page.</p>
+		</footer>
+	</div>
 </body>
 
 </html>

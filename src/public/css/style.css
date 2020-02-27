@@ -1,5 +1,7 @@
 *, ::after, ::before {
 	box-sizing: border-box;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 body {
@@ -232,11 +234,25 @@ textarea {
 	height: 320px;
 	margin-bottom: 20px;
 	outline: none;
-	font-family: 'Courier New', Courier, monospace;
 	resize: none;
-	border: 2px solid #92b0b3;
+}
+
+textarea, pre {
 	tab-size: 4;
 	font-size: 14px;
+	font-family: 'Courier New', Courier, monospace;
+	text-align: left;
+	border: 2px solid #92b0b3;
+}
+
+pre {
+	background-color: white;
+	padding: 10px;
+	white-space: pre-wrap;       /* css-3 */
+	white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
+	white-space: -pre-wrap;      /* Opera 4-6 */
+	white-space: -o-pre-wrap;    /* Opera 7 */
+	word-wrap: break-word;       /* Internet Explorer 5.5+ */   
 }
 
 #form input[type=password], #form select {

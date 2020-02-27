@@ -2,12 +2,13 @@ import fs from 'fs'
 import path from 'path'
 import shortid from 'shortid'
 import AdmZip from 'adm-zip'
+import { Op } from 'sequelize'
 import Folder from '../models/folder'
 import File from '../models/file'
-import { generateSalt, hashPassword, verifyHash } from '../utils/password'
+import Pastebin from '../models/pastebin'
 import sequelize from '../utils/sequelize'
 import config from '../../config.json'
-import { Op } from 'sequelize'
+import { generateSalt, hashPassword, verifyHash } from '../utils/password'
 
 export function index(req, res) {
 	res.render('index', { csrfToken: req.csrfToken() })
@@ -55,6 +56,11 @@ export async function localFiles(req, res) {
 		localFiles = JSON.parse(req.signedCookies.files)
 	}
 
+	var localPastebin = []
+	if (typeof req.signedCookies.pastebin !== 'undefined') {
+		localPastebin = JSON.parse(req.signedCookies.pastebin)
+	}
+
 	var files = []
 	for (const fileID of localFiles) {
 		const file = await Folder.findOne({ where: { id: fileID, expirationDate: { [Op.gte]: new Date() } } })
@@ -64,7 +70,16 @@ export async function localFiles(req, res) {
 		}
 	}
 
-	res.render('localFiles', { files: files })
+	var pastebins = []
+	for (const pastebinID of localPastebin) {
+		const pastebin = await Pastebin.findOne({ where: { id: pastebinID, expirationDate: { [Op.gte]: new Date() } } })
+		if (pastebin) {
+			pastebin.link = `${config.HOST}/pastebin/${pastebin.id}`
+			pastebins.push(pastebin)
+		}
+	}
+
+	res.render('localFiles', { files: files, pastebins: pastebins })
 }
 
 export async function clean(req, res) {
@@ -90,6 +105,8 @@ export async function clean(req, res) {
 			await folder.destroy()
 		}
 	}
+
+	await Pastebin.destroy({ where : { expirationDate: { [Op.lt]: new Date() } } })
 
 	res.end()
 }
@@ -135,10 +152,10 @@ export async function viewFiles(req, res, next) {
 							res.render('files', { id: folder.id, files: folder.files, csrfToken: req.csrfToken(), password: req.body.password })
 						} else {
 							req.flash('error', 'Wrong password!');
-							res.redirect(`/auth/${id}`)
+							res.redirect(`/files/${id}/auth`)
 						}
 					} else {
-						res.redirect(`/auth/${id}`)
+						res.redirect(`/files/${id}/auth`)
 					}
 				} else {
 					res.render('files', { id: folder.id, files: folder.files, csrfToken: req.csrfToken() })

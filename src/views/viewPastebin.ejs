@@ -15,32 +15,19 @@
 		<h1>bytty</h1>
 		<nav role="navigation">
 			<a href="/">File upload</a>
-			<a href="/pastebin" class="is-selected">Pastebin</a>
+			<a href="/pastebin">Pastebin</a>
 			<a href="/files">Your files</a>
 		</nav>
-		<form id="form" method="post" action="/pastebin/upload">
+
+		<form action="/pastebin/<%= pastebin.id %>/raw" method="POST">
 			<input type="hidden" name="_csrf" value="<%= csrfToken %>">
-			<textarea name="pastebin" id="pastebin" rows="10" required autofocus></textarea>
-
-			<div class="row">
-				<div class="left select-container">
-					<label for="duration">Expires in</label>
-					<div class="select">
-						<select name="duration" id="duration">
-							<option value="1d">1 day</option>
-							<option value="2d">2 days</option>
-							<option value="3d">3 days</option>
-						</select>
-					</div>
-				</div>
-	
-				<div class="right">
-					<input type="password" name="password" id="password" placeholder="Password (optional)">
-				</div>
-			</div>
-
-			<input type="submit" class="button block-button" value="Paste">
+			<% if (typeof password != 'undefined') { %>
+			<input type="hidden" name="password" value="<%= password %>">
+			<% } %>
+			<button class="button button-lg" type="submit">View raw</button>
 		</form>
+		
+		<pre><%= pastebin.content %></pre>
 	</div>
 
 	<!-- JS scripts -->
