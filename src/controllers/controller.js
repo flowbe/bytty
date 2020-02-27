@@ -4,8 +4,10 @@ import shortid from 'shortid'
 import AdmZip from 'adm-zip'
 import Folder from '../models/folder'
 import File from '../models/file'
+import { generateSalt, hashPassword, verifyHash } from '../utils/password'
 import sequelize from '../utils/sequelize'
 import config from '../../config.json'
+import { Op } from 'sequelize'
 
 export function index(req, res) {
 	res.render('index', { csrfToken: req.csrfToken() })
@@ -17,27 +19,57 @@ export async function upload(req, res) {
 	const duration = (req.body.duration == '3d') ? 3 : ((req.body.duration == '2d') ? 2 : 1)
 	const expirationDate = new Date()
 	expirationDate.setDate(expirationDate.getDate() + duration)
-	//console.log(req.body.password)
+
+	var parameters = { id: id, expirationDate: expirationDate }
+
+	if (req.body.password != '') {
+		parameters.salt = generateSalt()
+		parameters.password = hashPassword(req.body.password, parameters.salt)
+	}
 
 	try {
 		const result = await sequelize.transaction(async t => {
-			const folder = await Folder.create({ id: id, expirationDate: expirationDate }, { transaction: t })
+			const folder = await Folder.create(parameters, { transaction: t })
 			for (const file of req.files) {
 				const f = await File.create({ originalName: file.originalname, fileName: file.filename }, { transaction: t })
 				await f.setFolder(folder, { transaction: t })
 			}
 		})
 
-		res.end(JSON.stringify({ success: true, link: `${config.HOST}/files/${id}` }))
+		var localFiles = []
+		if (typeof req.signedCookies.files !== 'undefined') {
+			localFiles = JSON.parse(req.signedCookies.files)
+		}
+		localFiles.push(id)
+
+		res.cookie('files', JSON.stringify(localFiles), { signed: true }).end(JSON.stringify({ success: true, link: `${config.HOST}/files/${id}` }))
 	} catch (err) {
 		console.error(err)
 		res.status(500).end(JSON.stringify({ success: false, error: err.message }))
 	}
 }
 
+export async function localFiles(req, res) {
+	var localFiles = []
+	if (typeof req.signedCookies.files !== 'undefined') {
+		localFiles = JSON.parse(req.signedCookies.files)
+	}
+
+	var files = []
+	for (const fileID of localFiles) {
+		const file = await Folder.findOne({ where: { id: fileID, expirationDate: { [Op.gte]: new Date() } } })
+		if (file) {
+			file.link = `${config.HOST}/files/${file.id}`
+			files.push(file)
+		}
+	}
+
+	res.render('localFiles', { files: files })
+}
+
 export async function clean(req, res) {
 	const folders = await Folder.findAll({ include: [{ model: File }] })
-	
+
 	for (const folder of folders) {
 		if (folder.expirationDate < Date.now()) {
 			for (const file of folder.files) {
@@ -62,15 +94,55 @@ export async function clean(req, res) {
 	res.end()
 }
 
+export async function auth(req, res, next) {
+	const id = req.params.id
+
+	// Does the parameter passed looks like a valid id?
+	if (shortid.isValid(id)) {
+		try {
+			const folder = await Folder.findOne({ where: { id: id, expirationDate: { [Op.gte]: new Date() } }, include: [{ model: File }] })
+			if (folder) {
+				if (folder.password) {
+					res.render('auth', { id: id, csrfToken: req.csrfToken() })
+				} else {
+					res.redirect(`/files/${folder.id}`)
+				}
+			} else {
+				const err = new Error('The requested files don\'t exist')
+				next(err)
+			}
+		} catch (err) {
+			next(err)
+		}
+	} else {
+		const err = new Error('The requested files don\'t exist')
+		next(err)
+	}
+}
+
 export async function viewFiles(req, res, next) {
 	const id = req.params.id
 
 	// Does the parameter passed looks like a valid id?
 	if (shortid.isValid(id)) {
 		try {
-			const folder = await Folder.findOne({ where: { id: id }, include: [{ model: File }] })
+			const folder = await Folder.findOne({ where: { id: id, expirationDate: { [Op.gte]: new Date() } }, include: [{ model: File }] })
 			if (folder) {
-				res.render('files', { id: folder.id, files: folder.files })
+				if (folder.password) {
+					// Ask for password
+					if (req.method == 'POST' && req.body.password) {
+						if (verifyHash(folder.password, folder.salt, req.body.password)) {
+							res.render('files', { id: folder.id, files: folder.files, csrfToken: req.csrfToken(), password: req.body.password })
+						} else {
+							req.flash('error', 'Wrong password!');
+							res.redirect(`/auth/${id}`)
+						}
+					} else {
+						res.redirect(`/auth/${id}`)
+					}
+				} else {
+					res.render('files', { id: folder.id, files: folder.files, csrfToken: req.csrfToken() })
+				}
 			} else {
 				const err = new Error('The requested files don\'t exist')
 				next(err)
@@ -90,24 +162,28 @@ export async function downloadFiles(req, res) {
 	// Does the parameter passed looks like a valid id?
 	if (shortid.isValid(id)) {
 		try {
-			const folder = await Folder.findOne({ where: { id: id }, include: [{ model: File }] })
+			const folder = await Folder.findOne({ where: { id: id, expirationDate: { [Op.gte]: new Date() } }, include: [{ model: File }] })
 			if (folder) {
-				const zip = new AdmZip()
-				const zipPath = path.join('uploads', Date.now() + '.zip')
-				folder.files.forEach(file => zip.addLocalFile(path.join('uploads', file.fileName), '', file.originalName))
-				zip.writeZip(zipPath, err => {
-					if (err) {
-						next(err)
-					} else {
-						res.download(zipPath, 'files.zip', err => {
-							fs.unlink(zipPath, err => {
-								if (err) {
-									console.error(err)
-								}
+				if (!folder.password || (req.body.password && verifyHash(folder.password, folder.salt, req.body.password))) {
+					const zip = new AdmZip()
+					const zipPath = path.join('uploads', Date.now() + '.zip')
+					folder.files.forEach(file => zip.addLocalFile(path.join('uploads', file.fileName), '', file.originalName))
+					zip.writeZip(zipPath, err => {
+						if (err) {
+							next(err)
+						} else {
+							res.download(zipPath, 'files.zip', err => {
+								fs.unlink(zipPath, err => {
+									if (err) {
+										console.error(err)
+									}
+								})
 							})
-						})
-					}
-				})
+						}
+					})
+				} else {
+					res.redirect(`/files/${id}`)
+				}
 			} else {
 				const err = new Error('The requested files don\'t exist')
 				next(err)
@@ -127,9 +203,13 @@ export async function downloadFile(req, res) {
 
 	if (shortid.isValid(folderId) && fileId != undefined) {
 		try {
-			const file = await File.findOne({ where: { id: fileId }, include: [{ model: Folder, where: { id: folderId } }] })
+			const file = await File.findOne({ where: { id: fileId }, include: [{ model: Folder, where: { id: folderId, expirationDate: { [Op.gte]: new Date() } } }] })
 			if (file) {
-				res.download(path.join('uploads', file.fileName), file.originalName)
+				if (!file.folder.password || (req.body.password && verifyHash(file.folder.password, file.folder.salt, req.body.password))) {
+					res.download(path.join('uploads', file.fileName), file.originalName)
+				} else {
+					res.redirect(`/files/${folderId}`)
+				}
 			} else {
 				const err = new Error('The requested file doesn\'t exist')
 				next(err)

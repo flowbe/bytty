@@ -10,13 +10,36 @@
 </head>
 <body>
 	<div class="container" role="main">
-		<h1>Files</h1>
+		<h1>bytty</h1>
+		<nav role="navigation">
+			<a href="/">File upload</a>
+			<a href="/pastebin">Pastebin</a>
+			<a href="/files">Your files</a>
+		</nav>
 
-		<% files.forEach(file => { %>
-		<p><a href="/files/<%= id %>/download/<%= file.id %>"><%= file.originalName %></a></p>
-		<% }) %>
+		<form action="/files/<%= id %>/download" method="POST">
+			<input type="hidden" name="_csrf" value="<%= csrfToken %>">
+			<% if (typeof password != 'undefined') { %>
+			<input type="hidden" name="password" value="<%= password %>">
+			<% } %>
+			<button class="button button-lg" type="submit">Download all files</button>
+		</form>
 
-		<p><a href="/files/<%= id %>/download">Download all files</a></p>
+		<div class="files">
+			<% files.forEach(file => { %>
+			<div class="file">
+				<p><%= file.originalName %></p>
+				<img src="https://via.placeholder.com/150" alt="File preview">
+				<form action="/files/<%= id %>/download/<%= file.id %>" method="POST">
+					<input type="hidden" name="_csrf" value="<%= csrfToken %>">
+					<% if (typeof password != 'undefined') { %>
+					<input type="hidden" name="password" value="<%= password %>">
+					<% } %>
+					<button class="button" type="submit">Download</button>
+				</form>
+			</div>
+			<% }) %>
+		</div>
 	</div>
 </body>
 </html>

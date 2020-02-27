@@ -1,13 +1,13 @@
 *, ::after, ::before {
-    box-sizing: border-box;
+	box-sizing: border-box;
 }
 
 body {
 	font-family: Roboto, sans-serif;
 	color: #0f3c4b;
 	background-color: #e5edf1;
-	padding: 5rem 1.25rem;
-	/* 80 20 */
+	padding: 2.5rem 1.25rem;
+	/* 40 20 */
 }
 
 .container {
@@ -196,21 +196,35 @@ body {
 	display: none;
 }
 
-.no-js .box__button {
-	display: block;
+.button {
+	font-weight: 700;
+	color: white;
+	background-color: #39bfd3;
+	padding: 8px 16px;
+	border: none;
+	outline: none;
+	cursor: pointer;
 }
 
-.box__button {
-	font-weight: 700;
-	color: #e5edf1;
-	background-color: #39bfd3;
+.button:hover, .button:focus {
+	background-color: #0f3c4b;
+}
+
+.button.block-button {
 	display: block;
 	padding: 8px 16px;
 	margin: 40px auto 0;
 }
 
-.box__button:hover, .box__button:focus {
-	background-color: #0f3c4b;
+.button.button-lg {
+	font-size: 14px;
+}
+
+.error-message {
+	background-color: #e74c3c;
+	color: white;
+	padding: 15px;
+	border-radius: 3px;
 }
 
 textarea {
@@ -250,8 +264,8 @@ textarea {
 
 .select:after {
 	content: "";
-	width: 0; 
-	height: 0; 
+	width: 0;
+	height: 0;
 	border-left: 6px solid transparent;
 	border-right: 6px solid transparent;
 	border-top: 6px solid #92b0b3;
@@ -263,12 +277,12 @@ textarea {
 
 .row {
 	display: -ms-flexbox;
-    display: flex;
-    -ms-flex-wrap: wrap;
+	display: flex;
+	-ms-flex-wrap: wrap;
 	flex-wrap: wrap;
 }
 
-.row .left, .row .right {
+.row .left, .row .right, .row .full {
 	position: relative;
 	width: 100%;
 	padding-left: 15px;
@@ -299,4 +313,51 @@ textarea {
 		max-width: 50%;
 		margin-bottom: 0;
 	}
+}
+
+.files {
+	margin-top: 10px;
+}
+
+.files .file {
+	background-color: #c8dadf;
+	display: inline-block;
+	padding: 10px;
+	border-radius: 3px;
+	margin: 10px;
+}
+
+.files .file p {
+	margin: 0 0 10px 0;
+}
+
+.files .file img {
+	display: block;
+	margin-bottom: 10px;
+	max-height: 150px;
+	max-width: 150px;
+}
+
+table {
+	border-collapse: collapse;
+	width: 100%;
+}
+
+table, th, td {
+	border: 1px solid #0f3c4b;
+}
+
+th, td {
+	padding: 10px;
+}
+
+td a {
+	overflow-wrap: break-word;
+	word-wrap: break-word;
+	-ms-word-break: break-all;
+	word-break: break-word;
+	-ms-hyphens: auto;
+	-moz-hyphens: auto;
+	-webkit-hyphens: auto;
+	hyphens: auto;
 }

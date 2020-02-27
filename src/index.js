@@ -1,6 +1,8 @@
 import express from 'express'
 import path from 'path'
 import session from 'express-session'
+import flash from 'express-flash'
+import cookieParser from 'cookie-parser'
 import routes from './routes/routes'
 import pastebin from './routes/pastebin'
 import config from '../config.json'
@@ -8,6 +10,7 @@ import colors from './utils/colors'
 import sequelize from './utils/sequelize'
 import File from './models/file'
 import Folder from './models/folder'
+import Pastebin from './models/pastebin'
 
 sequelize.sync()
 
@@ -24,6 +27,10 @@ app.use(session({
 	resave: false,
 	saveUninitialized: true
 }))
+app.use(flash())
+
+// cookies
+app.use(cookieParser('AXvXsQ7MI6KjAy0hTb8S4MlHibqCzH24'))
 
 app.use('/static', express.static(path.join(__dirname, 'public')))
 

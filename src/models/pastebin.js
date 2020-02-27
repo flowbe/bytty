@@ -1,10 +1,14 @@
 import Sequelize from 'sequelize'
 import sequelize from '../utils/sequelize'
 
-const Folder = sequelize.define('folder', {
+const Pastebin = sequelize.define('pastebin', {
 	id: {
 		type: Sequelize.STRING,
 		primaryKey: true
+	},
+	content: {
+		type: Sequelize.TEXT,
+		allowNull: false
 	},
 	expirationDate: {
 		type: Sequelize.DATE,
@@ -18,4 +22,4 @@ const Folder = sequelize.define('folder', {
 	}
 })
 
-export default Folder
+export default Pastebin

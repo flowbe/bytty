@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>bytty</title>
+
+	<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Roboto:300,300italic,400" />
+	<link rel="stylesheet" type="text/css" href="/static/css/style.css">
+
+	<script type="text/javascript">
+		(function (e, t, n) { var r = e.querySelectorAll("html")[0]; r.className = r.className.replace(/(^|\s)no-js(\s|$)/, "$1js$2") })(document, window, 0);
+	</script>
+</head>
+
+<body>
+	<div class="container" role="main">
+		<h1>bytty</h1>
+		<nav role="navigation">
+			<a href="/">File upload</a>
+			<a href="/pastebin">Pastebin</a>
+			<a href="/files" class="is-selected">Your files</a>
+		</nav>
+		
+		<table>
+			<tr>
+				<th>Link</th>
+				<th>Creation date</th>
+				<th>Expiration date</th>
+			</tr>
+
+			<% if (files.length == 0) { %>
+			<tr>
+				<td colspan="3"> No files.</td>
+			</tr>
+			<% } %>
+			<% files.forEach(file => { %>
+			<tr>
+				<td><a href="<%= file.link %>"><%= file.link %></a></td>
+				<td><%= file.createdAt.toLocaleString() %></td>
+				<td><%= file.expirationDate.toLocaleString() %></td>
+			</tr>
+			<% }); %>
+		</table>
+	</div>
+
+	<!-- JS scripts -->
+	<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+	<script src="/static/js/script.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Password – bytty</title>
+
+	<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Roboto:300,300italic,400" />
+	<link rel="stylesheet" type="text/css" href="/static/css/style.css">
+
+	<script type="text/javascript">
+		(function (e, t, n) { var r = e.querySelectorAll("html")[0]; r.className = r.className.replace(/(^|\s)no-js(\s|$)/, "$1js$2") })(document, window, 0);
+	</script>
+</head>
+
+<body>
+	<div class="container" role="main">
+		<h1>bytty</h1>
+		<nav role="navigation">
+			<a href="/">File upload</a>
+			<a href="/pastebin">Pastebin</a>
+			<a href="/files">Your files</a>
+		</nav>
+
+		<p>These files are password protected. Please enter it below to access them.</p>
+		<% if (messages.error) { %>
+		<p class="error-message"><%= messages.error %></p>
+		<% } %>
+
+		<form id="form" method="post" action="/files/<%= id %>">
+			<input type="hidden" name="_csrf" value="<%= csrfToken %>">
+			<div class="row">
+				<div class="full">
+					<input type="password" name="password" id="password" placeholder="Password">
+				</div>
+				<button class="button block-button" type="submit">Submit</button>
+			</div>
+		</form>
+	</div>
+
+	<!-- JS scripts -->
+	<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+</body>
+
+</html>
