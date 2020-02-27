@@ -18,6 +18,10 @@
 			<a href="/pastebin" class="is-selected">Pastebin</a>
 			<a href="/files">Your files</a>
 		</nav>
+
+		<p class="success-message animation">Done! Your download link is <a href="#" id="download_link"></a>.</p>
+		<p class="error-message animation">Error! <span id="error_msg"></span>.</p>
+
 		<form id="form" method="post" action="/pastebin/upload">
 			<input type="hidden" name="_csrf" value="<%= csrfToken %>">
 			<textarea name="pastebin" id="pastebin" rows="10" required autofocus></textarea>
@@ -45,29 +49,7 @@
 
 	<!-- JS scripts -->
 	<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-	<script>
-		$('textarea').keydown(function(e) {
-			if(e.keyCode === 9) { // tab was pressed
-				// get caret position/selection
-				var start = this.selectionStart;
-				var end = this.selectionEnd;
-
-				var $this = $(this);
-				var value = $this.val();
-
-				// set textarea value to: text before caret + tab + text after caret
-				$this.val(value.substring(0, start)
-							+ '\t'
-							+ value.substring(end));
-
-				// put caret at right position again (add one for the tab)
-				this.selectionStart = this.selectionEnd = start + 1;
-
-				// prevent the focus lose
-				e.preventDefault();
-			}
-		});
-	</script>
+	<script src="/static/js/pastebin.js"></script>
 </body>
 
 </html>
