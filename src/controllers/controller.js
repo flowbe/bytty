@@ -126,6 +126,7 @@ export async function auth(req, res, next) {
 				}
 			} else {
 				const err = new Error('The requested files don\'t exist')
+				err.statusCode = 404
 				next(err)
 			}
 		} catch (err) {
@@ -133,6 +134,7 @@ export async function auth(req, res, next) {
 		}
 	} else {
 		const err = new Error('The requested files don\'t exist')
+		err.statusCode = 404
 		next(err)
 	}
 }
@@ -162,6 +164,7 @@ export async function viewFiles(req, res, next) {
 				}
 			} else {
 				const err = new Error('The requested files don\'t exist')
+				err.statusCode = 404
 				next(err)
 			}
 		} catch (err) {
@@ -169,6 +172,7 @@ export async function viewFiles(req, res, next) {
 		}
 	} else {
 		const err = new Error('The requested files don\'t exist')
+		err.statusCode = 404
 		next(err)
 	}
 }
@@ -203,6 +207,7 @@ export async function downloadFiles(req, res) {
 				}
 			} else {
 				const err = new Error('The requested files don\'t exist')
+				err.statusCode = 404
 				next(err)
 			}
 		} catch (err) {
@@ -210,6 +215,7 @@ export async function downloadFiles(req, res) {
 		}
 	} else {
 		const err = new Error('The requested files don\'t exist')
+		err.statusCode = 404
 		next(err)
 	}
 }
@@ -229,6 +235,7 @@ export async function downloadFile(req, res) {
 				}
 			} else {
 				const err = new Error('The requested file doesn\'t exist')
+				err.statusCode = 404
 				next(err)
 			}
 		} catch (err) {
@@ -236,6 +243,7 @@ export async function downloadFile(req, res) {
 		}
 	} else {
 		const err = new Error('The requested file doesn\'t exist')
+		err.statusCode = 404
 		next(err)
 	}
 }

@@ -56,14 +56,16 @@ export async function auth(req, res, next) {
 					res.redirect(`/pastebin/${pastebin.id}`)
 				}
 			} else {
-				const err = new Error('The requested pastebin don\'t exist')
+				const err = new Error('The requested pastebin doesn\'t exist')
+				err.statusCode = 404
 				next(err)
 			}
 		} catch (err) {
 			next(err)
 		}
 	} else {
-		const err = new Error('The requested pastebin don\'t exist')
+		const err = new Error('The requested pastebin doesn\'t exist')
+		err.statusCode = 404
 		next(err)
 	}
 }
@@ -92,14 +94,16 @@ export async function viewPastebin(req, res, next) {
 					res.render('viewPastebin', { pastebin: pastebin, csrfToken: req.csrfToken() })
 				}
 			} else {
-				const err = new Error('The requested pastebin don\'t exist')
+				const err = new Error('The requested pastebin doesn\'t exist')
+				err.statusCode = 404
 				next(err)
 			}
 		} catch (err) {
 			next(err)
 		}
 	} else {
-		const err = new Error('The requested pastebin don\'t exist')
+		const err = new Error('The requested pastebin doesn\'t exist')
+		err.statusCode = 404
 		next(err)
 	}
 }
@@ -128,14 +132,16 @@ export async function rawPastebin(req, res, next) {
 					res.end(pastebin.content)
 				}
 			} else {
-				const err = new Error('The requested pastebin don\'t exist')
+				const err = new Error('The requested pastebin doesn\'t exist')
+				err.statusCode = 404
 				next(err)
 			}
 		} catch (err) {
 			next(err)
 		}
 	} else {
-		const err = new Error('The requested pastebin don\'t exist')
+		const err = new Error('The requested pastebin doesn\'t exist')
+		err.statusCode = 404
 		next(err)
 	}
 }
